@@ -1,37 +1,36 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { servicesList } from "@/lib/servicesData";
 
-const servicesList = [
-  { name: "Front & Backend Development", slug: "front-backend-development" },
-  {
-    name: "Android & iOS App Development",
-    slug: "android-ios-app-development",
-  },
-  { name: "Software Testing", slug: "software-testing" },
-
-  { name: "Custom Software Development", slug: "custom-software-development" },
-  {
-    name: "AI & Machine Learning Development",
-    slug: "ai-machine-learning-development",
-  },
-  // { name: "Blockchain Development", slug: "blockchain-development" },
-
-  { name: "DevOps & Cloud Services", slug: "devops-cloud-services" },
-  { name: "System Integration", slug: "system-integration" },
-  { name: "MVP Development", slug: "mvp-development" },
-  {
-    name: "Scalable Enterprise Software",
-    slug: "enterprise-software-development",
-  },
-];
+const DROPDOWN_CLOSE_DELAY_MS = 50;
 
 export default function Header() {
   const [isServicesOpen, setIsServicesOpen] = useState(false);
+  const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pathname = usePathname();
+
+  const clearCloseTimeout = () => {
+    if (closeTimeoutRef.current) {
+      clearTimeout(closeTimeoutRef.current);
+      closeTimeoutRef.current = null;
+    }
+  };
+
+  const handleServicesEnter = () => {
+    clearCloseTimeout();
+    setIsServicesOpen(true);
+  };
+
+  const handleServicesLeave = () => {
+    closeTimeoutRef.current = setTimeout(() => {
+      setIsServicesOpen(false);
+      closeTimeoutRef.current = null;
+    }, DROPDOWN_CLOSE_DELAY_MS);
+  };
 
   const isActive = (path: string) => {
     if (path === "/") {
@@ -75,8 +74,8 @@ export default function Header() {
             </Link>
             <div
               className="relative"
-              onMouseEnter={() => setIsServicesOpen(true)}
-              onMouseLeave={() => setIsServicesOpen(false)}
+              onMouseEnter={handleServicesEnter}
+              onMouseLeave={handleServicesLeave}
             >
               <button
                 className={`font-semibold text-sm transition-colors flex items-center space-x-1 ${
@@ -102,7 +101,7 @@ export default function Header() {
               </button>
               {isServicesOpen && (
                 <div
-                  className="absolute top-full left-0 mt-2 w-72 bg-white/95 backdrop-blur-xl border border-[#51CFDF]/30 rounded-lg shadow-2xl py-3"
+                  className="absolute top-full left-0 mt-2 w-72 bg-white/95 backdrop-blur-xl border border-[#51CFDF]/30 rounded-lg shadow-2xl py-3 transition-opacity duration-100"
                   style={{
                     boxShadow:
                       "0 8px 32px rgba(81, 207, 223, 0.1), 0 0 0 1px rgba(81, 207, 223, 0.2)",
