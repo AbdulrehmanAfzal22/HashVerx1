@@ -3,52 +3,24 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import bankingImage from "../assets/Industries/Banking.png";
-import ecommerceImage from "../assets/Industries/ecommerce.png";
-import educationImage from "../assets/Industries/education.png";
-import healthcareImage from "../assets/Industries/Healthcare.png";
+import blockchainImage from "../assets/stories/blockchain.png";
+import fintechImage from "../assets/stories/fintech.png";
+import healthcareImage from "../assets/stories/Healthcare.png";
+import gamingImage from "../assets/stories/gaming.png";
+import edTechImage from "../assets/stories/ed-tech.png";
+import realEstateImage from "../assets/stories/realEstate.png";
+import ecommerceImage from "../assets/stories/e-commerce.png";
+import onDemandImage from "../assets/stories/onDemand.png";
 
 const solutions = [
-  {
-    title: "Blockchain Solutions",
-    image: bankingImage, // Using banking image as placeholder - you can replace with actual blockchain image
-    gradient: "from-purple-400 to-blue-400"
-  },
-  {
-    title: "Gaming Solutions",
-    image: ecommerceImage, // Placeholder - replace with gaming image
-    gradient: "from-gray-600 to-gray-700"
-  },
-  {
-    title: "Fintech Solutions",
-    image: bankingImage,
-    gradient: "from-blue-400 to-cyan-400"
-  },
-  {
-    title: "Ed-Tech Solutions",
-    image: educationImage,
-    gradient: "from-blue-400 to-indigo-400"
-  },
-  {
-    title: "E-commerce Solutions",
-    image: ecommerceImage,
-    gradient: "from-orange-400 to-pink-400"
-  },
-  {
-    title: "Healthcare Solutions",
-    image: healthcareImage,
-    gradient: "from-teal-400 to-cyan-400"
-  },
-  {
-    title: "Real Estate Solutions",
-    image: ecommerceImage, // Placeholder - replace with real estate image
-    gradient: "from-amber-400 to-orange-400"
-  },
-  {
-    title: "On Demand Solutions",
-    image: ecommerceImage, // Placeholder - replace with on-demand image
-    gradient: "from-indigo-400 to-purple-400"
-  }
+  { title: "Blockchain Solutions", image: blockchainImage },
+  { title: "Gaming Solutions", image: gamingImage },
+  { title: "Fintech Solutions", image: fintechImage },
+  { title: "Ed-Tech Solutions", image: edTechImage },
+  { title: "E-commerce Solutions", image: ecommerceImage },
+  { title: "Healthcare Solutions", image: healthcareImage },
+  { title: "Real Estate Solutions", image: realEstateImage },
+  { title: "On Demand Solutions", image: onDemandImage }
 ];
 
 export default function Services() {
@@ -148,10 +120,9 @@ export default function Services() {
                       className="object-cover"
                       sizes="(max-width: 768px) 50vw, 20vw"
                     />
-                    <div className={`absolute inset-0 bg-gradient-to-br ${solution.gradient} opacity-50`}></div>
                   </div>
-                  <div className="absolute inset-0 flex items-end p-4">
-                    <h4 className="text-white font-bold text-base md:text-lg leading-tight">
+                  <div className="absolute inset-0 flex items-end p-4 ">
+                    <h4 className="text-white font-bold text-base md:text-lg leading-tight drop-shadow">
                       {solution.title}
                     </h4>
                   </div>
@@ -185,10 +156,9 @@ export default function Services() {
                         className="object-cover"
                         sizes="(max-width: 768px) 50vw, 20vw"
                       />
-                      <div className={`absolute inset-0 bg-gradient-to-br ${solution.gradient} opacity-50`}></div>
                     </div>
-                    <div className="absolute inset-0 flex items-end p-4">
-                      <h4 className="text-white font-bold text-base md:text-lg leading-tight">
+                    <div className="absolute inset-0 flex items-end p-4 ">
+                      <h4 className="text-white font-bold text-base md:text-lg leading-tight drop-shadow">
                         {solution.title}
                       </h4>
                     </div>
@@ -223,10 +193,9 @@ export default function Services() {
                         className="object-cover"
                         sizes="(max-width: 768px) 50vw, 20vw"
                       />
-                      <div className={`absolute inset-0 bg-gradient-to-br ${solution.gradient} opacity-50`}></div>
                     </div>
-                    <div className="absolute inset-0 flex items-end p-4">
-                      <h4 className="text-white font-bold text-base md:text-lg leading-tight">
+                    <div className="absolute inset-0 flex items-end p-4 ">
+                      <h4 className="text-white font-bold text-base md:text-lg leading-tight drop-shadow">
                         {solution.title}
                       </h4>
                     </div>
