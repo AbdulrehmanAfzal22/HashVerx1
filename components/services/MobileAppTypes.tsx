@@ -35,18 +35,18 @@ export default function MobileAppTypes() {
   const [hoveredId, setHoveredId] = useState<string | null>(null);
 
   return (
-    <section className="py-20 bg-gray-50">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
-        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 text-center mb-12">
+    <section className="py-28 md:py-36 bg-gray-50">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 text-center mb-16">
           Enterprise App Development Services
         </h2>
-        <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
+        <div className="grid md:grid-cols-3 gap-8 lg:gap-10">
           {appTypes.map((item) => {
             const isHovered = hoveredId === item.id;
             return (
               <div
                 key={item.id}
-                className="group relative rounded-2xl overflow-hidden border border-[#51CFDF]/30 bg-gray-900 min-h-[380px]"
+                className="group relative rounded-2xl overflow-hidden border border-[#51CFDF]/30 bg-gray-900 min-h-[420px]"
                 onMouseEnter={() => setHoveredId(item.id)}
                 onMouseLeave={() => setHoveredId(null)}
               >

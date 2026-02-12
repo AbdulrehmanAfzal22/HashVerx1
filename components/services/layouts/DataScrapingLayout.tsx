@@ -3,6 +3,11 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { servicesData } from '@/lib/servicesData';
+import ServiceHeroSection from '../ServiceHeroSection';
+import ServiceOverviewSection from '../ServiceOverviewSection';
+import ServiceTypesSection from '../ServiceTypesSection';
+import type { OverviewCapability } from '../ServiceOverviewSection';
+import type { ServiceTypeItem } from '../ServiceTypesSection';
 
 const slug = 'data-scraping-web-crawling';
 const service = servicesData[slug];
@@ -11,81 +16,81 @@ const sources = service.sections.find((s) => s.id === 'data-sources');
 const sourceItems = sources?.type === 'list' ? sources.items : [];
 const deliverables = service.sections.find((s) => s.id === 'deliverables');
 const deliverItems = deliverables?.type === 'list' ? deliverables.items : [];
+const overviewCapabilities: OverviewCapability[] = sourceItems.map((item) => ({ title: item }));
 const automation = service.sections.find((s) => s.id === 'automation');
 const request = service.sections.find((s) => s.id === 'request-sample');
 
+const HERO_IMAGE = 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1920&q=80';
+const OVERVIEW_IMAGE = 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80';
+
+const TYPES_ITEMS: ServiceTypeItem[] = [
+  { id: 'websites', title: 'Websites', image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80', hoverText: 'We collect and structure data from websites at scale. Whether you need product data, pricing, or content, we deliver clean, reliable datasets on a schedule that fits your workflow.' },
+  { id: 'marketplaces', title: 'Marketplaces', image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&q=80', hoverText: 'Marketplace and e-commerce data for competitive intelligence and pricing. We handle complex structures and anti-scraping measures so you get the data you need in CSV, JSON, or via API.' },
+  { id: 'platforms', title: 'Public Platforms', image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80', hoverText: 'Structured data from public platforms and directories. We design crawlers that respect terms of use and deliver normalized data ready for analytics, ML, or integration into your applications.' },
+];
+
 export default function DataScrapingLayout() {
-  const [heroVisible, setHeroVisible] = useState(false);
   const [pipelineVisible, setPipelineVisible] = useState(false);
-  const heroRef = useRef<HTMLDivElement>(null);
   const pipelineRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const o1 = new IntersectionObserver(([e]) => e.isIntersecting && setHeroVisible(true), { threshold: 0.2 });
-    const o2 = new IntersectionObserver(([e]) => e.isIntersecting && setPipelineVisible(true), { threshold: 0.1 });
-    if (heroRef.current) o1.observe(heroRef.current);
-    if (pipelineRef.current) o2.observe(pipelineRef.current);
-    return () => { o1.disconnect(); o2.disconnect(); };
+    const o = new IntersectionObserver(([e]) => e.isIntersecting && setPipelineVisible(true), { threshold: 0.1 });
+    if (pipelineRef.current) o.observe(pipelineRef.current);
+    return () => o.disconnect();
   }, []);
 
   return (
     <>
-      {/* Hero: terminal / data vibe - dark green-teal */}
-      <section ref={heroRef} className="relative min-h-[80vh] flex items-center overflow-hidden bg-[#0d1117]">
-        <div className="absolute inset-0 opacity-30">
-          <div className="absolute inset-0 font-mono text-[#0d1117]" style={{ backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(34,197,94,0.03) 2px, rgba(34,197,94,0.03) 4px)' }} />
-        </div>
-        <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-[#22c55e]/10 to-transparent" />
-        <div className="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-          <div className={`max-w-2xl transition-all duration-700 ${heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-            <p className="font-mono text-[#22c55e] text-sm mb-3">$ data pipeline</p>
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 font-mono tracking-tight">{service.title}</h1>
-            <p className="text-lg text-gray-400 mb-8">{service.subtitle}</p>
-            <Link href="/contact" className="inline-flex items-center gap-2 bg-[#22c55e] hover:bg-[#4ade80] text-[#0d1117] px-6 py-3 rounded-lg font-semibold text-sm font-mono">
-              Request sample
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
-            </Link>
-          </div>
-        </div>
-      </section>
+      <ServiceHeroSection
+        image={HERO_IMAGE}
+        imageAlt="Data scraping and web crawling"
+        label={service.title}
+        title={service.subtitle}
+        ctaText="Request sample"
+      />
+      <ServiceOverviewSection
+        intro={service.intro}
+        capabilities={overviewCapabilities}
+        image={OVERVIEW_IMAGE}
+        imageAlt="Data pipeline"
+        capabilitiesHeading="Data sources:"
+      />
+      <ServiceTypesSection sectionTitle="Data Sources We Handle" items={TYPES_ITEMS} />
 
-      {/* Pipeline: Sources → Process → Deliverables */}
-      <section ref={pipelineRef} className="py-20 bg-[#161b22]">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <p className="text-center text-gray-400 mb-16 max-w-2xl mx-auto">{service.intro}</p>
-
-          <div className={`grid md:grid-cols-3 gap-8 items-center transition-all duration-700 ${pipelineVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
-            <div className="p-6 rounded-xl border-2 border-[#22c55e]/30 bg-[#0d1117]">
-              <p className="font-mono text-[#22c55e] text-xs uppercase tracking-widest mb-4">01 · Sources</p>
-              <ul className="space-y-2">
+      <section ref={pipelineRef} className="py-28 md:py-36 bg-gray-50">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className={`grid md:grid-cols-3 gap-10 items-center transition-all duration-700 ${pipelineVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
+            <div className="p-8 md:p-10 rounded-2xl border-2 border-[#51CFDF]/30 bg-white">
+              <p className="text-[#51CFDF] text-sm font-semibold uppercase tracking-widest mb-6">01 · Sources</p>
+              <ul className="space-y-3">
                 {sourceItems.map((item, i) => (
-                  <li key={i} className="text-gray-300 font-mono text-sm">→ {item}</li>
+                  <li key={i} className="text-gray-700 font-medium">→ {item}</li>
                 ))}
               </ul>
             </div>
             <div className="flex justify-center">
-              <div className="w-12 h-12 rounded-full border-2 border-[#22c55e]/50 flex items-center justify-center text-[#22c55e]">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
+              <div className="w-16 h-16 rounded-full border-2 border-[#0859B2] flex items-center justify-center text-[#0859B2]">
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
               </div>
             </div>
-            <div className="p-6 rounded-xl border-2 border-[#22c55e]/30 bg-[#0d1117]">
-              <p className="font-mono text-[#22c55e] text-xs uppercase tracking-widest mb-4">02 · Deliverables</p>
-              <ul className="space-y-2">
+            <div className="p-8 md:p-10 rounded-2xl border-2 border-[#51CFDF]/30 bg-white">
+              <p className="text-[#51CFDF] text-sm font-semibold uppercase tracking-widest mb-6">02 · Deliverables</p>
+              <ul className="space-y-3">
                 {deliverItems.map((item, i) => (
-                  <li key={i} className="text-gray-300 font-mono text-sm">→ {item}</li>
+                  <li key={i} className="text-gray-700 font-medium">→ {item}</li>
                 ))}
               </ul>
             </div>
           </div>
 
-          <div className={`mt-16 p-8 rounded-xl border border-[#22c55e]/20 bg-[#0d1117]/80 transition-all duration-700 delay-200 ${pipelineVisible ? 'opacity-100' : 'opacity-0'}`}>
-            <h3 className="font-mono text-[#22c55e] text-sm uppercase tracking-widest mb-3">Automation</h3>
-            <p className="text-gray-400 leading-relaxed">{automation?.type === 'paragraph' ? automation.content : ''}</p>
+          <div className={`mt-20 p-10 md:p-12 rounded-2xl border-2 border-[#51CFDF]/20 bg-white transition-all duration-700 delay-200 ${pipelineVisible ? 'opacity-100' : 'opacity-0'}`}>
+            <h3 className="text-[#0859B2] text-lg font-bold uppercase tracking-widest mb-4">Automation</h3>
+            <p className="text-gray-600 leading-relaxed text-lg">{automation?.type === 'paragraph' ? automation.content : ''}</p>
           </div>
 
-          <div className="mt-12 text-center">
-            <p className="text-gray-400 mb-6">{request?.type === 'paragraph' ? request.content : ''}</p>
-            <Link href="/contact" className="inline-flex items-center gap-2 bg-[#22c55e] hover:bg-[#4ade80] text-[#0d1117] px-8 py-4 rounded-lg font-semibold font-mono">
+          <div className="mt-16 text-center">
+            <p className="text-gray-600 mb-8 text-lg max-w-2xl mx-auto">{request?.type === 'paragraph' ? request.content : ''}</p>
+            <Link href="/contact" className="inline-flex items-center gap-2 bg-[#51CFDF] hover:bg-[#6dd9e8] text-white px-10 py-5 rounded-lg font-semibold text-base">
               Request sample dataset
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
             </Link>

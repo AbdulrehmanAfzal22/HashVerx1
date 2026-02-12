@@ -3,15 +3,30 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { servicesData } from '@/lib/servicesData';
+import ServiceHeroSection from '../ServiceHeroSection';
+import ServiceOverviewSection from '../ServiceOverviewSection';
+import ServiceTypesSection from '../ServiceTypesSection';
+import type { OverviewCapability } from '../ServiceOverviewSection';
+import type { ServiceTypeItem } from '../ServiceTypesSection';
 
 const slug = 'odoo-erp-services';
 const service = servicesData[slug];
 
 const odooServices = service.sections.find((s) => s.id === 'odoo-services');
 const serviceItems = odooServices?.type === 'list' ? odooServices.items : [];
+const overviewCapabilities: OverviewCapability[] = serviceItems.map((item) => ({ title: item }));
 const industry = service.sections.find((s) => s.id === 'industry-solutions');
 const support = service.sections.find((s) => s.id === 'support-migration');
 const book = service.sections.find((s) => s.id === 'book-consultation');
+
+const HERO_IMAGE = 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1920&q=80';
+const OVERVIEW_IMAGE = 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80';
+
+const TYPES_ITEMS: ServiceTypeItem[] = [
+  { id: 'impl', title: 'Implementation & Customization', image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80', hoverText: 'We implement Odoo from the ground up and customize it to fit your processes. Our experts ensure a smooth rollout, user training, and adoption so you get value from day one.' },
+  { id: 'modules', title: 'Custom Modules', image: 'https://images.unsplash.com/photo-1553877522-43269d4ea984?w=800&q=80', hoverText: 'Extend Odoo with custom modules built for your industry and workflows. We develop and integrate modules that align with your business rules and reporting needs.' },
+  { id: 'integrations', title: 'Integrations & AMC', image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&q=80', hoverText: 'Connect Odoo to your existing systems and keep it running with upgrades and AMC. We handle integrations, data migration, and ongoing support so your ERP stays current and reliable.' },
+];
 
 const MODULE_ICONS = [
   <svg key="1" className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>,
@@ -21,85 +36,70 @@ const MODULE_ICONS = [
 ];
 
 export default function OdooLayout() {
-  const [heroVisible, setHeroVisible] = useState(false);
   const [cardsVisible, setCardsVisible] = useState(false);
-  const heroRef = useRef<HTMLDivElement>(null);
   const cardsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const o1 = new IntersectionObserver(([e]) => e.isIntersecting && setHeroVisible(true), { threshold: 0.2 });
-    const o2 = new IntersectionObserver(([e]) => e.isIntersecting && setCardsVisible(true), { threshold: 0.1 });
-    if (heroRef.current) o1.observe(heroRef.current);
-    if (cardsRef.current) o2.observe(cardsRef.current);
-    return () => { o1.disconnect(); o2.disconnect(); };
+    const o = new IntersectionObserver(([e]) => e.isIntersecting && setCardsVisible(true), { threshold: 0.1 });
+    if (cardsRef.current) o.observe(cardsRef.current);
+    return () => o.disconnect();
   }, []);
 
   return (
     <>
-      {/* Hero: Odoo-style orange/amber */}
-      <section ref={heroRef} className="relative min-h-[75vh] flex items-center overflow-hidden bg-gradient-to-br from-[#875A7B] via-[#6b4c6a] to-[#4a3a49]">
-        <div className="absolute inset-0 opacity-30">
-          <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle at 20% 80%, rgba(255,255,255,0.1) 0%, transparent 50%)' }} />
-        </div>
-        <div className="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-          <div className={`max-w-2xl transition-all duration-700 ${heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-            <p className="text-amber-200/90 text-sm font-semibold uppercase tracking-widest mb-3">Odoo ERP</p>
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">{service.title}</h1>
-            <p className="text-lg text-white/80 mb-8">{service.subtitle}</p>
-            <Link href="/contact" className="inline-flex items-center gap-2 bg-amber-400 hover:bg-amber-300 text-[#2c2c2c] px-6 py-3 rounded-lg font-semibold text-sm">
-              Book consultation
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
-            </Link>
-          </div>
-        </div>
-      </section>
+      <ServiceHeroSection
+        image={HERO_IMAGE}
+        imageAlt="Odoo ERP services"
+        label={service.title}
+        title={service.subtitle}
+        ctaText="Book consultation"
+      />
+      <ServiceOverviewSection
+        intro={service.intro}
+        capabilities={overviewCapabilities}
+        image={OVERVIEW_IMAGE}
+        imageAlt="Odoo ERP"
+        capabilitiesHeading="Our Odoo services:"
+      />
+      <ServiceTypesSection sectionTitle="Our Odoo Services" items={TYPES_ITEMS} />
 
-      {/* Intro */}
-      <section className="py-16 bg-white">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p className="text-lg text-gray-600 leading-relaxed">{service.intro}</p>
-        </div>
-      </section>
-
-      {/* Odoo services - module cards */}
-      <section ref={cardsRef} className="py-20 bg-gray-50">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center text-[#875A7B] mb-12">Our Odoo services</h2>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <section ref={cardsRef} className="py-28 md:py-36 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl md:text-4xl font-bold text-center text-[#0859B2] mb-16">What we offer</h2>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {serviceItems.map((item, i) => (
               <div
                 key={i}
-                className={`p-6 rounded-2xl bg-white border-2 border-[#875A7B]/20 shadow-md hover:shadow-xl hover:border-[#875A7B]/50 transition-all duration-300 flex flex-col items-center text-center ${cardsVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}
+                className={`p-8 rounded-2xl bg-white border-2 border-[#51CFDF]/20 shadow-lg hover:shadow-xl hover:border-[#51CFDF]/50 transition-all duration-300 flex flex-col items-center text-center ${cardsVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}
                 style={{ transitionDelay: `${i * 80}ms` }}
               >
-                <div className="w-14 h-14 rounded-xl bg-[#875A7B]/10 text-[#875A7B] flex items-center justify-center mb-4">
+                <div className="w-16 h-16 rounded-xl bg-[#0859B2]/10 text-[#0859B2] flex items-center justify-center mb-6">
                   {MODULE_ICONS[i % MODULE_ICONS.length]}
                 </div>
-                <h3 className="font-semibold text-gray-900">{item}</h3>
+                <h3 className="font-semibold text-gray-900 text-lg">{item}</h3>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Industry + Support - two big blocks */}
-      <section className="py-20 bg-white">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-2 gap-8">
-            <div className="p-8 md:p-10 rounded-2xl bg-gradient-to-br from-[#875A7B] to-[#6b4c6a] text-white">
-              <h3 className="text-2xl font-bold mb-4">Industry solutions</h3>
-              <p className="text-white/90 leading-relaxed">{industry?.type === 'paragraph' ? industry.content : ''}</p>
+      <section className="py-28 md:py-36 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid md:grid-cols-2 gap-10">
+            <div className="p-10 md:p-14 rounded-3xl bg-[#0859B2] text-white">
+              <h3 className="text-2xl md:text-3xl font-bold mb-6">Industry solutions</h3>
+              <p className="text-white/90 leading-relaxed text-lg">{industry?.type === 'paragraph' ? industry.content : ''}</p>
             </div>
-            <div className="p-8 md:p-10 rounded-2xl border-2 border-[#875A7B]/30 bg-amber-50/50">
-              <h3 className="text-2xl font-bold text-[#875A7B] mb-4">Support & migration</h3>
-              <p className="text-gray-600 leading-relaxed">{support?.type === 'paragraph' ? support.content : ''}</p>
+            <div className="p-10 md:p-14 rounded-3xl border-2 border-[#51CFDF]/30 bg-gray-50">
+              <h3 className="text-2xl md:text-3xl font-bold text-[#0859B2] mb-6">Support & migration</h3>
+              <p className="text-gray-600 leading-relaxed text-lg">{support?.type === 'paragraph' ? support.content : ''}</p>
             </div>
           </div>
 
-          <div className="mt-16 text-center p-8 rounded-2xl bg-gray-50 border border-[#875A7B]/20">
-            <h3 className="text-xl font-bold text-gray-900 mb-3">Ready to streamline with Odoo?</h3>
-            <p className="text-gray-600 mb-6 max-w-xl mx-auto">{book?.type === 'paragraph' ? book.content : ''}</p>
-            <Link href="/contact" className="inline-flex items-center gap-2 bg-[#875A7B] hover:bg-[#6b4c6a] text-white px-8 py-4 rounded-lg font-semibold">
+          <div className="mt-20 text-center p-12 md:p-16 rounded-3xl bg-gray-50 border-2 border-[#51CFDF]/20">
+            <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">Ready to streamline with Odoo?</h3>
+            <p className="text-gray-600 mb-8 max-w-2xl mx-auto text-lg">{book?.type === 'paragraph' ? book.content : ''}</p>
+            <Link href="/contact" className="inline-flex items-center gap-2 bg-[#51CFDF] hover:bg-[#6dd9e8] text-white px-10 py-5 rounded-lg font-semibold text-base">
               Schedule free consultation
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
             </Link>

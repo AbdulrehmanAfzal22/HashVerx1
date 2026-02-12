@@ -48,23 +48,23 @@ export default function MobileAppOverview() {
   }, []);
 
   return (
-    <section className="py-20 bg-white">
+    <section className="py-28 md:py-36 bg-white">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-        <div ref={ref} className="grid md:grid-cols-12 gap-10 lg:gap-14 items-center">
+        <div ref={ref} className="grid md:grid-cols-12 gap-14 lg:gap-20 items-center">
           <div
             className={`md:col-span-5 transition-all duration-700 ${
               isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-6'
             }`}
           >
-            <p className="text-[#51CFDF] text-sm font-semibold uppercase tracking-wider mb-4">
+            <p className="text-[#51CFDF] text-sm font-semibold uppercase tracking-wider mb-5">
               Overview
             </p>
-            <p className="text-base md:text-lg text-gray-900 leading-relaxed mb-8">
+            <p className="text-lg md:text-xl text-gray-900 leading-relaxed mb-10">
               Every app we build is engineered to drive measurable business outcomes. With expertise
               spanning cutting-edge native development, cross-platform solutions, and enterprise-grade
               systems, our engineers transform bold ideas into dynamic mobile experiences.
             </p>
-            <h3 className="text-xl font-bold text-gray-900 mb-6">What we are good at:</h3>
+            <h3 className="text-2xl font-bold text-gray-900 mb-8">What we are good at:</h3>
             <ul className="space-y-4">
               {capabilities.map((item, i) => (
                 <li key={i} className="flex gap-3">

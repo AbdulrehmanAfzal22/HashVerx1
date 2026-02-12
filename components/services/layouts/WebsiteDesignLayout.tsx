@@ -3,16 +3,31 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { servicesData } from '@/lib/servicesData';
+import ServiceHeroSection from '../ServiceHeroSection';
+import ServiceOverviewSection from '../ServiceOverviewSection';
+import ServiceTypesSection from '../ServiceTypesSection';
+import type { OverviewCapability } from '../ServiceOverviewSection';
+import type { ServiceTypeItem } from '../ServiceTypesSection';
 
 const slug = 'website-design-development';
 const service = servicesData[slug];
 
 const websiteTypes = service.sections.find((s) => s.id === 'website-types');
 const typeItems = websiteTypes?.type === 'list' ? websiteTypes.items : [];
+const overviewCapabilities: OverviewCapability[] = typeItems.map((item) => ({ title: item }));
 const techStack = service.sections.find((s) => s.id === 'tech-stack');
 const stackItems = techStack?.type === 'list' ? techStack.items : [];
 const seo = service.sections.find((s) => s.id === 'seo-ready');
 const viewWork = service.sections.find((s) => s.id === 'view-work');
+
+const HERO_IMAGE = 'https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?w=1920&q=80';
+const OVERVIEW_IMAGE = 'https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?w=800&q=80';
+
+const TYPES_ITEMS: ServiceTypeItem[] = [
+  { id: 'corporate', title: 'Corporate Websites', image: 'https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?w=800&q=80', hoverText: 'Professional corporate sites that represent your brand and convert visitors. We combine clear messaging, modern design, and performance so your company makes a strong first impression.' },
+  { id: 'saas', title: 'Product / SaaS Websites', image: 'https://images.unsplash.com/photo-1551431009-a802eeec77b1?w=800&q=80', hoverText: 'Landing and product pages built for conversion. We create fast, SEO-friendly pages that showcase your product and drive sign-ups and demos with clear CTAs and trust elements.' },
+  { id: 'cms', title: 'CMS & Landing Pages', image: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&q=80', hoverText: 'Websites on WordPress or headless CMS that your team can update. We also build standalone landing pages for campaigns, events, and product launches with forms and analytics built in.' },
+];
 
 const TYPE_ICONS = [
   <svg key="1" className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>,
@@ -22,72 +37,54 @@ const TYPE_ICONS = [
 ];
 
 export default function WebsiteDesignLayout() {
-  const [heroVisible, setHeroVisible] = useState(false);
   const [cardsVisible, setCardsVisible] = useState(false);
-  const heroRef = useRef<HTMLDivElement>(null);
   const cardsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const o1 = new IntersectionObserver(([e]) => e.isIntersecting && setHeroVisible(true), { threshold: 0.2 });
-    const o2 = new IntersectionObserver(([e]) => e.isIntersecting && setCardsVisible(true), { threshold: 0.1 });
-    if (heroRef.current) o1.observe(heroRef.current);
-    if (cardsRef.current) o2.observe(cardsRef.current);
-    return () => { o1.disconnect(); o2.disconnect(); };
+    const o = new IntersectionObserver(([e]) => e.isIntersecting && setCardsVisible(true), { threshold: 0.1 });
+    if (cardsRef.current) o.observe(cardsRef.current);
+    return () => o.disconnect();
   }, []);
 
   return (
     <>
-      {/* Hero: browser frame style - clean light */}
-      <section ref={heroRef} className="relative min-h-[80vh] flex items-center overflow-hidden bg-gradient-to-b from-slate-50 to-white">
-        <div className="absolute top-20 right-0 w-96 h-96 bg-[#51CFDF]/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-80 h-80 bg-[#0859B2]/10 rounded-full blur-3xl" />
-        <div className="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-          <div className={`max-w-2xl transition-all duration-700 ${heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-200/80 text-slate-600 text-sm mb-6">
-              <span className="w-2 h-2 rounded-full bg-red-400" />
-              <span className="w-2 h-2 rounded-full bg-amber-400" />
-              <span className="w-2 h-2 rounded-full bg-green-400" />
-              <span className="ml-1">Web</span>
-            </div>
-            <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">{service.title}</h1>
-            <p className="text-lg text-slate-600 mb-8">{service.subtitle}</p>
-            <Link href="/contact" className="inline-flex items-center gap-2 bg-[#0859B2] hover:bg-[#0d4a8f] text-white px-6 py-3 rounded-lg font-semibold text-sm">
-              Get a quote
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
-            </Link>
-          </div>
-        </div>
-      </section>
+      <ServiceHeroSection
+        image={HERO_IMAGE}
+        imageAlt="Website design and development"
+        label={service.title}
+        title={service.subtitle}
+        ctaText="Get a quote"
+      />
+      <ServiceOverviewSection
+        intro={service.intro}
+        capabilities={overviewCapabilities}
+        image={OVERVIEW_IMAGE}
+        imageAlt="Website design"
+        capabilitiesHeading="Website types we build:"
+      />
+      <ServiceTypesSection sectionTitle="Website Types We Build" items={TYPES_ITEMS} />
 
-      {/* Intro */}
-      <section className="py-16 bg-white">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p className="text-lg text-gray-600 leading-relaxed">{service.intro}</p>
-        </div>
-      </section>
-
-      {/* Website types - visual cards */}
-      <section ref={cardsRef} className="py-20 bg-slate-50">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center text-slate-800 mb-12">Website types we build</h2>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <section ref={cardsRef} className="py-28 md:py-36 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl md:text-4xl font-bold text-center text-[#0859B2] mb-16">What we offer</h2>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {typeItems.map((item, i) => (
               <div
                 key={i}
-                className={`p-6 rounded-2xl bg-white border border-slate-200 shadow-sm hover:shadow-lg hover:border-[#51CFDF]/40 transition-all duration-300 ${cardsVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}
+                className={`p-8 rounded-2xl bg-white border-2 border-[#51CFDF]/20 shadow-lg hover:shadow-xl hover:border-[#51CFDF]/40 transition-all duration-300 ${cardsVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}
                 style={{ transitionDelay: `${i * 80}ms` }}
               >
-                <div className="w-14 h-14 rounded-xl bg-[#0859B2]/10 text-[#0859B2] flex items-center justify-center mb-4">
+                <div className="w-16 h-16 rounded-xl bg-[#0859B2]/10 text-[#0859B2] flex items-center justify-center mb-6">
                   {TYPE_ICONS[i % TYPE_ICONS.length]}
                 </div>
-                <h3 className="font-semibold text-slate-800">{item}</h3>
+                <h3 className="font-semibold text-gray-800 text-lg">{item}</h3>
               </div>
             ))}
           </div>
 
-          <div className="mt-12 flex flex-wrap justify-center gap-3">
+          <div className="mt-16 flex flex-wrap justify-center gap-4">
             {stackItems.map((tech, i) => (
-              <span key={i} className="px-4 py-2 rounded-lg bg-[#0859B2] text-white text-sm font-medium">
+              <span key={i} className="px-6 py-3 rounded-lg bg-[#0859B2] text-white text-base font-medium">
                 {tech}
               </span>
             ))}
@@ -95,16 +92,15 @@ export default function WebsiteDesignLayout() {
         </div>
       </section>
 
-      {/* SEO + View work */}
-      <section className="py-20 bg-white">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="p-10 rounded-2xl border-2 border-[#51CFDF]/30 bg-gradient-to-br from-slate-50 to-[#51CFDF]/5">
-            <h3 className="text-2xl font-bold text-[#0859B2] mb-4">SEO ready</h3>
-            <p className="text-gray-600 leading-relaxed">{seo?.type === 'paragraph' ? seo.content : ''}</p>
+      <section className="py-28 md:py-36 bg-white">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="p-12 md:p-16 rounded-3xl border-2 border-[#51CFDF]/30 bg-gray-50">
+            <h3 className="text-2xl md:text-3xl font-bold text-[#0859B2] mb-6">SEO ready</h3>
+            <p className="text-gray-600 leading-relaxed text-lg">{seo?.type === 'paragraph' ? seo.content : ''}</p>
           </div>
-          <div className="mt-12 text-center">
-            <p className="text-gray-600 mb-6">{viewWork?.type === 'paragraph' ? viewWork.content : ''}</p>
-            <Link href="/success-stories" className="inline-flex items-center gap-2 bg-[#51CFDF] hover:bg-[#6dd9e8] text-slate-900 px-8 py-4 rounded-lg font-semibold">
+          <div className="mt-16 text-center">
+            <p className="text-gray-600 mb-8 text-lg max-w-2xl mx-auto">{viewWork?.type === 'paragraph' ? viewWork.content : ''}</p>
+            <Link href="/success-stories" className="inline-flex items-center gap-2 bg-[#51CFDF] hover:bg-[#6dd9e8] text-white px-10 py-5 rounded-lg font-semibold text-base">
               View our work
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
             </Link>
